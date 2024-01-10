@@ -1,11 +1,14 @@
 @echo off
-title Nothing Phone 2 Fastboot ROM Flasher (t.me/NothingPhone2)
+setx PATH "%PATH%;%cd"
+
+title Transsion mt6789 Fastboot ROM Flasher
 
 echo ###########################################################
-echo #                Pong Fastboot ROM Flasher                #
-echo #                   Developed/Tested By                   #
+echo #          Transsion mt6789 Fastboot ROM Flasher          #
+echo #             Originally Developed/Tested By              #
 echo #  HELLBOY017, viralbanda, spike0en, PHATwalrus, arter97  #
-echo #          [Nothing Phone (2) Telegram Dev Team]          #
+echo #        [From Nothing Phone (2) Telegram Dev Team]       #
+echo #          Adapted for Transsion mt6789 by rama982        #
 echo ###########################################################
 
 echo #############################
@@ -30,10 +33,10 @@ if %errorlevel% equ 1 (
     set slot=a
 )
 
-echo ##########################
-echo # FLASHING BOOT/RECOVERY #
-echo ##########################
-for %%i in (boot vendor_boot dtbo recovery) do (
+echo #################
+echo # FLASHING BOOT #
+echo #################
+for %%i in (boot vendor_boot dtbo) do (
     if %slot% equ all (
         for %%s in (a b) do (
             fastboot flash %%i_%%s %%i.img
@@ -43,15 +46,10 @@ for %%i in (boot vendor_boot dtbo recovery) do (
     )
 )
 
-echo ##########################             
-echo # REBOOTING TO FASTBOOTD #       
-echo ##########################
-fastboot reboot fastboot
-
 echo #####################
 echo # FLASHING FIRMWARE #
 echo #####################
-for %%i in (abl aop aop_config bluetooth cpucp devcfg dsp featenabler hyp imagefv keymaster modem multiimgoem multiimgqti qupfw qweslicstore shrm tz uefi uefisecapp xbl xbl_config xbl_ramdump) do (
+for %%i in (dpm gz lk logo mcupm md1img pi_img scp spmfw sspm tee) do (
     fastboot flash --slot=%slot% %%i %%i.img
 )
 
@@ -66,23 +64,10 @@ if %errorlevel% equ 1 (
     fastboot flash --slot=%slot% vbmeta vbmeta.img
 )
 
-echo Flash logical partition images?
-echo If you're about to install a custom ROM that distributes its own logical partitions, say N.
-choice /m "If unsure, say Y."
-if %errorlevel% equ 1 (
-    echo ###############################
-    echo # FLASHING LOGICAL PARTITIONS #
-    echo ###############################
-    for %%i in (system system_ext product vendor vendor_dlkm odm) do (
-        for %%s in (a b) do (
-            fastboot delete-logical-partition %%i_%%s-cow
-            fastboot delete-logical-partition %%i_%%s
-            fastboot create-logical-partition %%i_%%s 1
-        )
-
-        fastboot flash %%i %%i.img
-    )
-)
+echo ##################
+echo # FLASHING SUPER #
+echo ##################
+fastboot flash super super.img
 
 echo #################################
 echo # FLASHING VBMETA SYSTEM/VENDOR #

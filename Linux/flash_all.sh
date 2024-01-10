@@ -1,10 +1,11 @@
 #!/bin/bash
 
 echo "###########################################################"
-echo "#                Pong Fastboot ROM Flasher                #"
-echo "#                   Developed/Tested By                   #"
+echo "#         Transsion mt6789 Fastboot ROM Flasher           #"
+echo "#             Originally Developed/Tested By              #"
 echo "#  HELLBOY017, viralbanda, spike0en, PHATwalrus, arter97  #"
-echo "#          [Nothing Phone (2) Telegram Dev Team]          #"
+echo "#        [From Nothing Phone (2) Telegram Dev Team]       #"
+echo "#         Adapted for Transsion mt6789 by rama982         #"
 echo "###########################################################"
 
 fastboot=bin/fastboot
@@ -38,10 +39,10 @@ case $SLOT_RESP in
         ;;
 esac
 
-echo "##########################"
-echo "# FLASHING BOOT/RECOVERY #"
-echo "##########################"
-for i in boot vendor_boot dtbo recovery; do
+echo "#################"
+echo "# FLASHING BOOT #"
+echo "#################"
+for i in boot vendor_boot dtbo; do
     if [ $SLOT = "--slot=all" ]; then
         for s in a b; do
             $fastboot flash ${i}_${s} $i.img
@@ -51,15 +52,10 @@ for i in boot vendor_boot dtbo recovery; do
     fi
 done
 
-echo "##########################"             
-echo "# REBOOTING TO FASTBOOTD #"       
-echo "##########################"
-$fastboot reboot fastboot
-
 echo "#####################"
 echo "# FLASHING FIRMWARE #"
 echo "#####################"
-for i in abl aop aop_config bluetooth cpucp devcfg dsp featenabler hyp imagefv keymaster modem multiimgoem multiimgqti qupfw qweslicstore shrm tz uefi uefisecapp xbl xbl_config xbl_ramdump; do
+for i in dpm gz lk logo mcupm md1img pi_img scp spmfw sspm tee; do
     $fastboot flash $SLOT $i $i.img
 done
 
@@ -76,25 +72,10 @@ case $VBMETA_RESP in
         ;;
 esac
 
-echo "Flash logical partition images?"
-echo "If you're about to install a custom ROM that distributes its own logical partitions, say N."
-read -p "If unsure, say Y. (Y/N) " LOGICAL_RESP
-case $LOGICAL_RESP in
-    [yY] )
-        echo "###############################"
-        echo "# FLASHING LOGICAL PARTITIONS #"
-        echo "###############################"
-        for i in system system_ext product vendor vendor_dlkm odm; do
-            for s in a b; do
-                $fastboot delete-logical-partition ${i}_${s}-cow
-                $fastboot delete-logical-partition ${i}_${s}
-                $fastboot create-logical-partition ${i}_${s} 1
-            done
-
-            $fastboot flash $i $i.img
-        done
-        ;;
-esac
+echo  "##################"
+echo  "# FLASHING SUPER #"
+echo  "##################"
+sudo fastboot flash super super.img
 
 echo "#################################"
 echo "# FLASHING VBMETA SYSTEM/VENDOR #"
