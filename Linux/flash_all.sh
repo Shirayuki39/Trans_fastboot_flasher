@@ -32,32 +32,27 @@ case $DATA_RESP in
         ;;
 esac
 
-read -p "Flash images on both slots? If unsure, say N. (Y/N) " SLOT_RESP
-case $SLOT_RESP in
-    [yY] )
-        SLOT="--slot=all"
-        ;;
-esac
-
 echo "#################"
 echo "# FLASHING BOOT #"
 echo "#################"
 for i in boot vendor_boot dtbo; do
-    if [ $SLOT = "--slot=all" ]; then
-        for s in a b; do
-            $fastboot flash ${i}_${s} $i.img
-        done
-    else
-        $fastboot flash $i $i.img
-    fi
+    for s in a b; do
+        $fastboot flash ${i}_${s} $i.img
+    done
 done
 
 echo "#####################"
 echo "# FLASHING FIRMWARE #"
 echo "#####################"
-for i in dpm gz lk logo mcupm md1img pi_img scp spmfw sspm tee; do
-    $fastboot flash $SLOT $i $i.img
+for i in dpm gz lk mcupm md1img pi_img scp spmfw sspm tee; do
+    for s in a b; do
+        $fastboot flash ${i}_${s} $i.img
+    done
 done
+$fastboot flash preloader_a preloader_raw.img
+$fastboot flash preloader_b preloader_raw.img
+$fastboot flash logo_a logo.bin
+$fastboot flash logo_b logo.bin
 
 echo "###################"
 echo "# FLASHING VBMETA #"
@@ -65,10 +60,10 @@ echo "###################"
 read -p "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y. (Y/N) " VBMETA_RESP
 case $VBMETA_RESP in
     [yY] )
-        $fastboot flash $SLOT vbmeta --disable-verity --disable-verification vbmeta.img
+        $fastboot flash vbmeta --disable-verity --disable-verification vbmeta.img
         ;;
     *)
-        $fastboot flash $SLOT vbmeta vbmeta.img
+        $fastboot flash vbmeta vbmeta.img
         ;;
 esac
 
@@ -81,14 +76,7 @@ echo "#################################"
 echo "# FLASHING VBMETA SYSTEM/VENDOR #"
 echo "#################################"
 for i in vbmeta_system vbmeta_vendor; do
-    case $VBMETA_RESP in
-        [yY] )
-            $fastboot flash $i --disable-verity --disable-verification $i.img
-            ;;
-        *)
-            $fastboot flash $i $i.img
-            ;;
-    esac
+    $fastboot flash ${i}_a $i.img
 done
 
 echo "#############"
