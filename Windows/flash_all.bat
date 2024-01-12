@@ -26,32 +26,27 @@ if %errorlevel% equ 1 (
     fastboot erase metadata
 )
 
-choice /m "Flash images on both slots? If unsure, say N."
-if %errorlevel% equ 1 (
-    set slot=all
-) else (
-    set slot=a
-)
-
 echo #################
 echo # FLASHING BOOT #
 echo #################
 for %%i in (boot vendor_boot dtbo) do (
-    if %slot% equ all (
-        for %%s in (a b) do (
-            fastboot flash %%i_%%s %%i.img
-        )
-    ) else (
-        fastboot flash %%i %%i.img
+    for %%s in (a b) do (
+        fastboot flash %%i_%%s %%i.img
     )
 )
 
 echo #####################
 echo # FLASHING FIRMWARE #
 echo #####################
-for %%i in (dpm gz lk logo mcupm md1img pi_img scp spmfw sspm tee) do (
-    fastboot flash --slot=%slot% %%i %%i.img
+for %%i in (dpm gz lk mcupm md1img pi_img scp spmfw sspm tee) do (
+    for %%s in (a b) do (
+        fastboot flash %%i_%%s %%i.img
+    )
 )
+fastboot flash preloader_a preloader_raw.img
+fastboot flash preloader_b preloader_raw.img
+fastboot flash logo_a logo.bin
+fastboot flash logo_b logo.bin
 
 echo ###################
 echo # FLASHING VBMETA #
@@ -59,9 +54,9 @@ echo ###################
 choice /m "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y."
 if %errorlevel% equ 1 (
     set disable_avb=1
-    fastboot flash --slot=%slot% vbmeta --disable-verity --disable-verification vbmeta.img
+    fastboot flash vbmeta --disable-verity --disable-verification vbmeta.img
 ) else (
-    fastboot flash --slot=%slot% vbmeta vbmeta.img
+    fastboot flash vbmeta vbmeta.img
 )
 
 echo ##################
@@ -73,11 +68,7 @@ echo #################################
 echo # FLASHING VBMETA SYSTEM/VENDOR #
 echo #################################
 for %%i in (vbmeta_system vbmeta_vendor) do (
-    if %disable_avb% equ 1 (
-        fastboot flash %%i --disable-verity --disable-verification %%i.img
-    ) else (
-        fastboot flash %%i %%i.img
-    )
+    fastboot flash %%i_a %%i.img
 )
 
 echo #############
