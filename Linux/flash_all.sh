@@ -41,6 +41,11 @@ for i in boot vendor_boot dtbo; do
     done
 done
 
+echo "##########################"
+echo "# REBOOTING TO FASTBOOTD #"
+echo "##########################"
+$fastboot reboot fastboot
+
 echo "#####################"
 echo "# FLASHING FIRMWARE #"
 echo "#####################"

@@ -35,6 +35,11 @@ for %%i in (boot vendor_boot dtbo) do (
     )
 )
 
+echo ##########################
+echo # REBOOTING TO FASTBOOTD #
+echo ##########################
+fastboot reboot fastboot
+
 echo #####################
 echo # FLASHING FIRMWARE #
 echo #####################
