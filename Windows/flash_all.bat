@@ -51,9 +51,9 @@ echo ###################
 choice /m "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y."
 if %errorlevel% equ 1 (
     set disable_avb=1
-    %fastboot% flash vbmeta --disable-verity --disable-verification vbmeta.img
+    %fastboot% flash vbmeta_a --disable-verity --disable-verification vbmeta.img
 ) else (
-    %fastboot% flash vbmeta vbmeta.img
+    %fastboot% flash vbmeta_a vbmeta.img
 )
 
 echo #################################

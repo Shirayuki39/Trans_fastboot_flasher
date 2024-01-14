@@ -56,10 +56,10 @@ echo "###################"
 read -p "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y. (Y/N) " VBMETA_RESP
 case $VBMETA_RESP in
     [yY] )
-        $fastboot flash vbmeta --disable-verity --disable-verification vbmeta.img
+        $fastboot flash vbmeta_a --disable-verity --disable-verification vbmeta.img
         ;;
     *)
-        $fastboot flash vbmeta vbmeta.img
+        $fastboot flash vbmeta_a vbmeta.img
         ;;
 esac
 
