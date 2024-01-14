@@ -32,14 +32,10 @@ case $DATA_RESP in
         ;;
 esac
 
-echo "#################"
-echo "# FLASHING BOOT #"
-echo "#################"
-for i in boot vendor_boot dtbo; do
-    for s in a b; do
-        $fastboot flash ${i}_${s} $i.img
-    done
-done
+echo  "##################"
+echo  "# FLASHING SUPER #"
+echo  "##################"
+sudo fastboot flash super super.img
 
 echo "##########################"
 echo "# REBOOTING TO FASTBOOTD #"
@@ -49,15 +45,10 @@ $fastboot reboot fastboot
 echo "#####################"
 echo "# FLASHING FIRMWARE #"
 echo "#####################"
-for i in dpm gz lk mcupm md1img pi_img scp spmfw sspm tee; do
-    for s in a b; do
-        $fastboot flash ${i}_${s} $i.img
-    done
+for i in dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv; do
+    $fastboot flash ${i}_a $i.img
 done
-$fastboot flash preloader_a preloader_raw.img
-$fastboot flash preloader_b preloader_raw.img
 $fastboot flash logo_a logo.bin
-$fastboot flash logo_b logo.bin
 
 echo "###################"
 echo "# FLASHING VBMETA #"
@@ -72,15 +63,17 @@ case $VBMETA_RESP in
         ;;
 esac
 
-echo  "##################"
-echo  "# FLASHING SUPER #"
-echo  "##################"
-sudo fastboot flash super super.img
-
 echo "#################################"
 echo "# FLASHING VBMETA SYSTEM/VENDOR #"
 echo "#################################"
 for i in vbmeta_system vbmeta_vendor; do
+    $fastboot flash ${i}_a $i.img
+done
+
+echo "#################"
+echo "# FLASHING BOOT #"
+echo "#################"
+for i in boot vendor_boot dtbo; do
     $fastboot flash ${i}_a $i.img
 done
 

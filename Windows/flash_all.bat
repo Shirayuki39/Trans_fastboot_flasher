@@ -27,14 +27,10 @@ if %errorlevel% equ 1 (
     %fastboot% erase metadata
 )
 
-echo #################
-echo # FLASHING BOOT #
-echo #################
-for %%i in (boot vendor_boot dtbo) do (
-    for %%s in (a b) do (
-        %fastboot% flash %%i_%%s %%i.img
-    )
-)
+echo ##################
+echo # FLASHING SUPER #
+echo ##################
+%fastboot% flash super super.img
 
 echo ##########################
 echo # REBOOTING TO FASTBOOTD #
@@ -44,15 +40,10 @@ echo ##########################
 echo #####################
 echo # FLASHING FIRMWARE #
 echo #####################
-for %%i in (dpm gz lk mcupm md1img pi_img scp spmfw sspm tee) do (
-    for %%s in (a b) do (
-        %fastboot% flash %%i_%%s %%i.img
-    )
+for %%i in (dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv) do (
+    %fastboot% flash %%i_a %%i.img
 )
-%fastboot% flash preloader_a preloader_raw.img
-%fastboot% flash preloader_b preloader_raw.img
 %fastboot% flash logo_a logo.bin
-%fastboot% flash logo_b logo.bin
 
 echo ###################
 echo # FLASHING VBMETA #
@@ -65,15 +56,17 @@ if %errorlevel% equ 1 (
     %fastboot% flash vbmeta vbmeta.img
 )
 
-echo ##################
-echo # FLASHING SUPER #
-echo ##################
-%fastboot% flash super super.img
-
 echo #################################
 echo # FLASHING VBMETA SYSTEM/VENDOR #
 echo #################################
 for %%i in (vbmeta_system vbmeta_vendor) do (
+    %fastboot% flash %%i_a %%i.img
+)
+
+echo #################
+echo # FLASHING BOOT #
+echo #################
+for %%i in (boot vendor_boot dtbo) do (
     %fastboot% flash %%i_a %%i.img
 )
 
