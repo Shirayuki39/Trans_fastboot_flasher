@@ -6,6 +6,7 @@ echo "#             Originally Developed/Tested By              #"
 echo "#  HELLBOY017, viralbanda, spike0en, PHATwalrus, arter97  #"
 echo "#        [From Nothing Phone (2) Telegram Dev Team]       #"
 echo "#         Adapted for Transsion mt6789 by rama982         #"
+echo "#        Modified to flash both slots by Shirayuki39      #"
 echo "###########################################################"
 
 fastboot=bin/fastboot
@@ -50,16 +51,21 @@ for i in dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv; do
 done
 $fastboot flash logo_a logo.bin
 
+for i in dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv; do
+    $fastboot flash ${i}_b $i.img
+done
+$fastboot flash logo_b logo.bin
+
 echo "###################"
 echo "# FLASHING VBMETA #"
 echo "###################"
-read -p "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y. (Y/N) " VBMETA_RESP
+read -p "Disable android verified boot?, If unsure, say N. Bootloader won't be lockable if you select Y. If you're preparing the device for custom ROM installation, say Y (Y/N) " VBMETA_RESP
 case $VBMETA_RESP in
     [yY] )
-        $fastboot flash vbmeta_a --disable-verity --disable-verification vbmeta.img
+        $fastboot flash vbmeta --slot all --disable-verity --disable-verification vbmeta.img
         ;;
     *)
-        $fastboot flash vbmeta_a vbmeta.img
+        $fastboot flash vbmeta --slot all vbmeta.img
         ;;
 esac
 
@@ -70,11 +76,19 @@ for i in vbmeta_system vbmeta_vendor; do
     $fastboot flash ${i}_a $i.img
 done
 
+for i in vbmeta_system vbmeta_vendor; do
+    $fastboot flash ${i}_b $i.img
+done
+
 echo "#################"
 echo "# FLASHING BOOT #"
 echo "#################"
 for i in boot vendor_boot dtbo; do
     $fastboot flash ${i}_a $i.img
+done
+
+for i in boot vendor_boot dtbo; do
+    $fastboot flash ${i}_b $i.img
 done
 
 echo "#############"
