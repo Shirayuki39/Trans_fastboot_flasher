@@ -18,21 +18,6 @@ echo # CHANGING ACTIVE SLOT TO A #
 echo #############################
 %fastboot% --set-active=a
 
-echo ###################
-echo # FORMATTING DATA #
-echo ###################
-choice /m "Wipe Data?"
-if %errorlevel% equ 1 (
-    echo Please ignore "Did you mean to format this partition?" warnings.
-    %fastboot% erase userdata
-    %fastboot% erase metadata
-)
-
-echo ##################
-echo # FLASHING SUPER #
-echo ##################
-%fastboot% flash super super.img
-
 echo ##########################
 echo # REBOOTING TO FASTBOOTD #
 echo ##########################
@@ -41,12 +26,12 @@ echo ##########################
 echo #####################
 echo # FLASHING FIRMWARE #
 echo #####################
-for %%i in (dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv) do (
+for %%i in (dpm gz lk mcupm md1img pi_img scp spmfw sspm tee tkv) do (
     %fastboot% flash %%i_a %%i.img
 )
 %fastboot% flash logo_a logo.bin
 
-for %%i in (dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv) do (
+for %%i in (dpm gz lk mcupm md1img pi_img scp spmfw sspm tee tkv) do (
     %fastboot% flash %%i_b %%i.img
 )
 %fastboot% flash logo_b logo.bin
@@ -95,7 +80,6 @@ if %errorlevel% equ 1 (
 echo ########
 echo # DONE #
 echo ########
-echo Stock firmware restored.
-echo You may now optionally re-lock the bootloader if you haven't disabled android verified boot.
+echo System Prepared for Custom ROM
 
 pause

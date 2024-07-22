@@ -21,23 +21,6 @@ echo "# CHANGING ACTIVE SLOT TO A #"
 echo "#############################"
 $fastboot --set-active=a
 
-echo "###################"
-echo "# FORMATTING DATA #"
-echo "###################"
-read -p "Wipe Data? (Y/N) " DATA_RESP
-case $DATA_RESP in
-    [yY] )
-        echo 'Please ignore "Did you mean to format this partition?" warnings.'
-        $fastboot erase userdata
-        $fastboot erase metadata
-        ;;
-esac
-
-echo  "##################"
-echo  "# FLASHING SUPER #"
-echo  "##################"
-sudo fastboot flash super super.img
-
 echo "##########################"
 echo "# REBOOTING TO FASTBOOTD #"
 echo "##########################"
@@ -46,12 +29,12 @@ $fastboot reboot fastboot
 echo "#####################"
 echo "# FLASHING FIRMWARE #"
 echo "#####################"
-for i in dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv; do
+for i in dpm gz lk mcupm md1img pi_img scp spmfw sspm tee tkv; do
     $fastboot flash ${i}_a $i.img
 done
 $fastboot flash logo_a logo.bin
 
-for i in dpm gz lk mcupm md1img pi_img preloader_raw scp spmfw sspm tee tkv; do
+for i in dpm gz lk mcupm md1img pi_img scp spmfw sspm tee tkv; do
     $fastboot flash ${i}_b $i.img
 done
 $fastboot flash logo_b logo.bin
@@ -104,5 +87,4 @@ esac
 echo "########"
 echo "# DONE #"
 echo "########"
-echo "Stock firmware restored."
-echo "You may now optionally re-lock the bootloader if you haven't disabled android verified boot."
+echo "System Partition Slots Prepared for Custom ROM."
